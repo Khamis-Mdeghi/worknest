@@ -1,3 +1,12 @@
 from django.contrib import admin
+from .models import Workspace, Membership
 
-# Register your models here.
+@admin.register(Workspace)
+class WorkspaceAdmin(admin.ModelAdmin):
+    list_display = ['name', 'owner', 'created_at']
+    search_fields = ['name', 'owner__email']
+
+@admin.register(Membership)
+class MembershipAdmin(admin.ModelAdmin):
+    list_display = ['user', 'workspace', 'role', 'joined_at']
+    list_filter = ['role']
