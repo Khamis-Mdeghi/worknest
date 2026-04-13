@@ -99,3 +99,20 @@ LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
+
+# File Upload Settings
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+AWS_ACCESS_KEY_ID = config('DO_SPACES_KEY')
+AWS_SECRET_ACCESS_KEY = config('DO_SPACES_SECRET')
+AWS_STORAGE_BUCKET_NAME = config('DO_SPACES_BUCKET')
+AWS_S3_REGION_NAME = config('DO_SPACES_REGION')
+AWS_S3_ENDPOINT_URL = config('DO_SPACES_ENDPOINT')
+AWS_S3_OBJECT_PARAMETERS = {
+    'CacheControl': 'max-age=86400',
+}
+AWS_DEFAULT_ACL = 'private'  # files are private by default
+AWS_S3_FILE_OVERWRITE = False  # don't overwrite files with same name
+
+# Max file size: 10MB
+MAX_UPLOAD_SIZE = 10 * 1024 * 1024
