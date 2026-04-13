@@ -23,6 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/auth/', include('accounts.urls')),
     path('api/workspaces/', include('workspaces.urls')),
+    path('api/workspaces/<uuid:workspace_pk>/projects/', include('projects.urls')),
 ]
 
 if settings.DEBUG:
