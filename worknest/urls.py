@@ -26,6 +26,7 @@ urlpatterns = [
     path('api/workspaces/<uuid:workspace_pk>/projects/', include('projects.urls')),
     path('api/workspaces/<uuid:workspace_pk>/projects/<uuid:project_pk>/files/', include('files.urls')),
     path('api/subscriptions/', include('subscriptions.urls')),
+    path('api/notifications/', include('notifications.urls')),
 ]
 
 if settings.DEBUG:

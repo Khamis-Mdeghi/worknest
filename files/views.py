@@ -10,6 +10,8 @@ from .serializers import FileSerializer
 from projects.models import Project, ProjectMembership
 from workspaces.models import Membership
 
+from notifications.utils import notify_workspace_members
+from notifications.models import Notification
 
 def is_workspace_admin_or_owner(user, workspace):
     return Membership.objects.filter(
@@ -62,6 +64,14 @@ class FileListCreateView(APIView):
         serializer = FileSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save(project=project, uploaded_by=request.user)
+            notify_workspace_members(
+                workspace=project.workspace,
+                sender=request.user,
+                notification_type=Notification.Type.FILE_UPLOADED,
+                title='New file uploaded',
+                message=f'{request.user.full_name} uploaded a file to {project.name}',
+                exclude_user=request.user
+            )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

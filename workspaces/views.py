@@ -5,6 +5,9 @@ from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 
+from notifications.utils import send_notification, notify_workspace_members
+from notifications.models import Notification
+
 from .models import Workspace, Membership
 from .serializers import (
     WorkspaceSerializer, MemberSerializer,
@@ -110,6 +113,14 @@ class WorkspaceMembersView(APIView):
                 user=user,
                 workspace=workspace,
                 role=serializer.validated_data['role']
+            )
+            send_notification(
+                recipient=user,
+                sender=request.user,
+                notification_type=Notification.Type.MEMBER_JOINED,
+                title='You were added to a workspace',
+                message=f'{request.user.full_name} added you to {workspace.name}',
+                workspace=workspace
             )
             return Response(MemberSerializer(membership).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -22,6 +22,7 @@ THIRD_PARTY_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
+    'channels',
 ]
 
 LOCAL_APPS = [
@@ -149,3 +150,14 @@ PLAN_LIMITS = {
 stripe.api_key = STRIPE_SECRET_KEY
 
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:3000')
+
+ASGI_APPLICATION = 'worknest.asgi.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [('127.0.0.1', 6379)],
+        },
+    },
+}
