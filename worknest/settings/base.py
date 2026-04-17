@@ -1,5 +1,6 @@
 from pathlib import Path
 from decouple import config
+import stripe
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -116,3 +117,35 @@ AWS_S3_FILE_OVERWRITE = False  # don't overwrite files with same name
 
 # Max file size: 10MB
 MAX_UPLOAD_SIZE = 10 * 1024 * 1024
+
+STRIPE_SECRET_KEY = config('STRIPE_SECRET_KEY')
+STRIPE_PUBLISHABLE_KEY = config('STRIPE_PUBLISHABLE_KEY')
+STRIPE_WEBHOOK_SECRET = config('STRIPE_WEBHOOK_SECRET')
+
+STRIPE_PRICE_IDS = {
+    'free': config('STRIPE_FREE_PRICE_ID'),
+    'pro': config('STRIPE_PRO_PRICE_ID'),
+    'business': config('STRIPE_BUSINESS_PRICE_ID'),
+}
+
+PLAN_LIMITS = {
+    'free': {
+        'workspaces': 1,
+        'storage_mb': 500,
+        'members_per_workspace': 3,
+    },
+    'pro': {
+        'workspaces': 5,
+        'storage_mb': 10240,  # 10GB
+        'members_per_workspace': 20,
+    },
+    'business': {
+        'workspaces': -1,  # unlimited
+        'storage_mb': 102400,  # 100GB
+        'members_per_workspace': -1,  # unlimited
+    },
+}
+
+stripe.api_key = STRIPE_SECRET_KEY
+
+FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:3000')

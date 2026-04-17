@@ -17,7 +17,6 @@ User = get_user_model()
 
 class WorkspaceListCreateView(APIView):
     permission_classes = [IsAuthenticated]
-
     def get(self, request):
         # only return workspaces the user belongs to
         workspaces = Workspace.objects.filter(members=request.user)
@@ -25,7 +24,19 @@ class WorkspaceListCreateView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
+        # check workspace limit based on plan
+        subscription = getattr(request.user, 'subscription', None)
+        plan_limit = subscription.limits['workspaces'] if subscription else 1
+        
+        if plan_limit != -1:  # -1 means unlimited
+            current_count = request.user.owned_workspaces.count()
+        if current_count >= plan_limit:
+            return Response(
+                {"detail": f"Your {subscription.plan} plan allows {plan_limit} workspace(s). Upgrade to create more."},
+                status=status.HTTP_403_FORBIDDEN
+            )
         serializer = WorkspaceSerializer(data=request.data, context={'request': request})
+
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
